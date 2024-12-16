@@ -1,40 +1,88 @@
-const cors = require('cors');
 const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+const userRoutes = require('./routes/userRoutes');
+const transactionRoutes = require('./routes/transcationRoutes');
+
+// Load environment variables
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
+
 const app = express();
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:3001', // Replace with your frontend URL
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true,
+}));
 app.use(express.json());
 
-app.post('/signup', (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required.' });
-  }
-
-  res.status(201).json({ username });
-  console.log('user created...')
+// Use the user routes
+app.use('/users', userRoutes);
+app.use('/transactions', transactionRoutes);
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  console.log(req.body)
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required.' });
-  }
 
-  res.status(201).json({username});
-  console.log('login successfuly...')
-});
-app.post('/logout', (req, res) => {
-  // Example logout logic
-  try {
-    // Clear session or authentication tokens
-    console.log('logout successfuly...')
-    res.status(200).json({ message: 'Logout successful' });
-  } catch (error) {
-    res.status(500).json({ message: 'Logout failed' });
-  }
-});
+// const cors = require('cors');
+// const express = require('express');
+// const bodyParser = require('body-parser');
+// const connectDB = require('./config/db');
+// const userRoutes = require('./routes/userRoutes');
+// const dotenv = require('dotenv');
+// // Load environment variables
+// dotenv.config();
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+// // Connect to MongoDB
+// connectDB();
+
+
+// const app = express();
+
+
+
+// app.use(cors());
+// app.use(express.json());
+
+// app.post('/signup', (req, res) => {
+//   const { username, password } = req.body;
+
+//   if (!username || !password) {
+//     return res.status(400).json({ message: 'Username and password are required.' });
+//   }
+
+//   res.status(201).json({ username });
+//   console.log('user created...')
+// });
+
+// app.post('/login', (req, res) => {
+//   const { username, password } = req.body;
+//   console.log(req.body)
+//   if (!username || !password) {
+//     return res.status(400).json({ message: 'Username and password are required.' });
+//   }
+
+//   res.status(201).json({username});
+//   console.log('login successfuly...')
+// });
+// app.post('/logout', (req, res) => {
+//   // Example logout logic
+//   try {
+//     // Clear session or authentication tokens
+//     console.log('logout successfuly...')
+//     res.status(200).json({ message: 'Logout successful' });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Logout failed' });
+//   }
+// });
+
+// // Start server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
