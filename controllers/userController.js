@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -44,12 +45,17 @@ exports.signup = async (req, res) => {
 
 // Login Controller
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required.' });
+  const { username,password} = req.body;
+  // const password='asd123';
+  console.log('the req.body in login Controller ........',req.body)
+  if (!username) {
+    return res.status(400).json({ message: 'the Username is required ' });
   }
-
+  if (!password) {
+    // const password='asd123';
+    console.log('the current password is ',password)
+    return res.status(400).json({ message: 'the password is required ' });
+  }
   try {
     // Find user by username
     const user = await User.findOne({ username });
@@ -62,9 +68,22 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid username or password.' });
     }
-
-    res.status(200).json({ message: 'Login successful.', username });
-    console.log('Login successful...');
+    //JWT_SECRET=your_secret_key
+    // const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '48h' });
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+    //res.json({ token });
+    console.log('the token is ', token)
+    
+    res.status(200).json({
+      message: 'Login successful.',
+      username,
+      token // Ensure token is sent back
+    });
+    console.log('Login successful...kkkk');
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error.' });

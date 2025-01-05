@@ -1,52 +1,48 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Protect middleware to secure routes
 exports.protect = async (req, res, next) => {
   let token;
 
-  // Check if the Authorization header exists and starts with "Bearer"
+  console.log('🔍 Incoming Request Body:', req.body);
+  console.log('🔑 Authorization Header:', req.headers.authorization);
+
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-      // Extract the token from the header
       token = req.headers.authorization.split(' ')[1];
+      console.log('🛡️ Token:', token);
 
-      // Verify the token
+      if (!token) {
+        return res.status(401).json({ message: 'Token missing in Authorization header.' });
+      }
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('✅ Token Decoded:', decoded);
 
-      // Fetch the user associated with the token
-      req.user = await User.findById(decoded.id).select('-password');
+      if (decoded.id) {
+        req.user = await User.findById(decoded.id).select('-password');
+      } else if (decoded.username) {
+        req.user = { username: decoded.username }; // Temporary fallback
+      } else {
+        throw new Error('Token is invalid. No user ID or username.');
+      }
 
-      // Proceed to the next middleware
+      console.log('👤 Authenticated User:', req.user);
+
       next();
     } catch (error) {
-      console.error('Authorization error:', error.message);
+      console.error('❌ Authorization Error:', error.message);
+
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Token expired. Please log in again.' });
+      }
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: 'Invalid token.' });
+      }
       return res.status(401).json({ message: 'Unauthorized access.' });
     }
   } else {
-    res.status(401).json({ message: 'No token provided.' });
+    console.error('⚠️ No Token Provided in Headers');
+    res.status(401).json({ message: 'No token provided in Authorization header.' });
   }
 };
-
-
-// const jwt = require('jsonwebtoken');
-// const User = require('../models/User');
-// const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-
-// exports.protect = async (req, res, next) => {
-//   let token;
-//   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-//     try {
-//       token = req.headers.authorization.split(' ')[1];
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//       req.user = await User.findById(decoded.id).select('-password');
-//       next();
-//     } catch (error) {
-//         console.error('Authorization error:', error.message);
-//         return res.status(401).json({ message: 'Unauthorized access.' });
-//       }
-//   } else {
-//     res.status(401).json({ message: 'No token provided.' });
-//   }
-// };

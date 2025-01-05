@@ -12,13 +12,29 @@ dotenv.config();
 connectDB();
 
 const app = express();
+// const cors = require('cors');
+
+// Allow multiple origins or set to '*'
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 
 // Middleware
-app.use(cors({
-  origin: 'http://localhost:3001', // Replace with your frontend URL
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: 'http://localhost:3001', // Replace with your frontend URL
+//   methods: 'GET,POST,PUT,DELETE',
+//   credentials: true,
+// }));
 app.use(express.json());
 
 // Use the user routes
