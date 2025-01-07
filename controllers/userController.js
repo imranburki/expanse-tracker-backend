@@ -47,13 +47,13 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { username,password} = req.body;
   // const password='asd123';
-  console.log('the req.body in login Controller ........',req.body)
+  // console.log('the req.body in login Controller ........',req.body)
   if (!username) {
     return res.status(400).json({ message: 'the Username is required ' });
   }
   if (!password) {
     // const password='asd123';
-    console.log('the current password is ',password)
+//    console.log('the current password is ',password)
     return res.status(400).json({ message: 'the password is required ' });
   }
   try {
@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
       { expiresIn: '1d' }
     );
     //res.json({ token });
-    console.log('the token is ', token)
+  //  console.log('the token is ', token)
     
     res.status(200).json({
       message: 'Login successful.',

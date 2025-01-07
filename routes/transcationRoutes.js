@@ -7,12 +7,12 @@ const {
 const { protect } = require('../middlewares/authMiddleWare');
 const router = express.Router();
 
-// GET and POST /api/transactions
+// GET and POST /
 router.route('/')
   .get(protect, getTransactions)
   .post(protect, addTransaction);
 
-// DELETE /api/transactions/:id
+// DELETE /transactions/:id
 router.route('/:id').delete(protect, deleteTransaction);
 
 module.exports = router;
