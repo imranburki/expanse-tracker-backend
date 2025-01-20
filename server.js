@@ -12,13 +12,12 @@ dotenv.config();
 connectDB();
 
 const app = express();
-// const cors = require('cors');
 
 // Allow multiple origins or set to '*'
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'];
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -26,25 +25,69 @@ app.use(cors({
     }
   },
   methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization'
+  allowedHeaders: 'Content-Type,Authorization',
 }));
 
 // Middleware
-// app.use(cors({
-//   origin: 'http://localhost:3001', // Replace with your frontend URL
-//   methods: 'GET,POST,PUT,DELETE',
-//   credentials: true,
-// }));
 app.use(express.json());
 
 // Use the user routes
 app.use('/users', userRoutes);
 app.use('/transactions', transactionRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// const express = require('express');
+// const cors = require('cors');
+// const dotenv = require('dotenv');
+// const connectDB = require('./config/db');
+// const userRoutes = require('./routes/userRoutes');
+// const transactionRoutes = require('./routes/transcationRoutes');
+
+// // Load environment variables
+// dotenv.config();
+
+// // Connect to MongoDB
+// connectDB();
+
+// const app = express();
+// // const cors = require('cors');
+
+// // Allow multiple origins or set to '*'
+// const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: 'GET,POST,PUT,DELETE',
+//   allowedHeaders: 'Content-Type,Authorization'
+// }));
+
+// // Middleware
+// // app.use(cors({
+// //   origin: 'http://localhost:3001', // Replace with your frontend URL
+// //   methods: 'GET,POST,PUT,DELETE',
+// //   credentials: true,
+// // }));
+// app.use(express.json());
+
+// // Use the user routes
+// app.use('/users', userRoutes);
+// app.use('/transactions', transactionRoutes);
+// // Start the server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
 
 
 // const cors = require('cors');
