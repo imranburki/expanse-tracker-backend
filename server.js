@@ -14,7 +14,8 @@ connectDB();
 const app = express();
 
 // Allow multiple origins or set to '*'
-const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'];
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://3.86.13.82', 'http://3.86.13.82:3000'];
+//const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'];
 // const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['54.145.87.82'];
 
 app.use(cors({
