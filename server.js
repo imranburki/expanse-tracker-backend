@@ -15,28 +15,27 @@ const app = express();
 
 
 // Allow multiple origins or set to '*'
-app.options('*', (req, res) => {
-  console.log('CORS preflight request:', req.headers);
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.sendStatus(204); // No Content
-});
+app.use(cors({
+  origin: 'http://54.145.87.82', // Allow frontend's exact origin
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization',
+  credentials: true,
+}));
 
 //const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'];
 // const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['54.145.87.82'];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
-}));
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: 'GET,POST,PUT,DELETE',
+//   allowedHeaders: 'Content-Type,Authorization',
+// }));
 
 // Middleware
 app.use(express.json());
