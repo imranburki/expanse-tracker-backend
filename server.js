@@ -13,8 +13,16 @@ connectDB();
 
 const app = express();
 
+
 // Allow multiple origins or set to '*'
-const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://3.86.13.82', 'http://3.86.13.82:3000'];
+app.options('*', (req, res) => {
+  console.log('CORS preflight request:', req.headers);
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.sendStatus(204); // No Content
+});
+
 //const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000'];
 // const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['54.145.87.82'];
 
