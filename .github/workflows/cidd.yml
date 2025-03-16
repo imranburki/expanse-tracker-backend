@@ -33,15 +33,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/nodejs-app:latest .
+          docker build -t ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest .
 
       - name: Push Docker Image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-app:latest
+          docker push ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest
 
   deploy:
     name: Deploy to AWS EC2
@@ -66,13 +66,13 @@ jobs:
             docker rm node-app || true
             
             # Pull the latest image
-            docker pull ${{ secrets.DOCKER_USERNAME }}/node-app:latest
+            docker pull ${{ vars.DOCKER_USERNAME }}/node-app:latest
             
             # Run the container
             docker run -d -p 5000:5000 \
               --name node-app \
               --env-file /home/ubuntu/.env \
-              ${{ secrets.DOCKER_USERNAME }}/node-app:latest
+              ${{ vars.DOCKER_USERNAME }}/node-app:latest
             
             echo "Deployment successful!"
           EOF
