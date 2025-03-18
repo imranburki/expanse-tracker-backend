@@ -27,7 +27,7 @@ jobs:
             
         # Run the container
         docker run -d -p 5000:5000 \
-            --name node-app 
+            --name node-app \
             --env-file /home/ubuntu/.env \
             ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest
     - name: Run Docker Container
