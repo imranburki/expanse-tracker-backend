@@ -1,78 +1,78 @@
-name: Node.js CI/CD Pipeline to AWS EC2
+# name: Node.js CI/CD Pipeline to AWS EC2
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+# jobs:
+#   test:
+#     name: Run Tests
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
 
-      - name: Install Dependencies
-        run: npm ci
+#       - name: Install Dependencies
+#         run: npm ci
 
-      - name: Run Tests
-        run: echo "Skipping tests as none are defined"
+#       - name: Run Tests
+#         run: echo "Skipping tests as none are defined"
 
-  build-and-push:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+#   build-and-push:
+#     name: Build & Push Docker Image
+#     runs-on: ubuntu-latest
+#     needs: test
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+#       - name: Log in to Docker Hub
+#         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build Docker Image
-        run: |
-          docker build -t ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest .
+#       - name: Build Docker Image
+#         run: |
+#           docker build -t ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest .
 
-      - name: Push Docker Image to Docker Hub
-        run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest
+#       - name: Push Docker Image to Docker Hub
+#         run: |
+#           docker push ${{ vars.DOCKER_USERNAME }}/nodejs-app:latest
 
-  deploy:
-    name: Deploy to AWS EC2
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+#   deploy:
+#     name: Deploy to AWS EC2
+#     runs-on: ubuntu-latest
+#     needs: build-and-push
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
 
-      - name: Deploy on EC2
-        env:
-          EC2_PUBLIC_IP: "34.229.129.48"
-        run: |
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
+#       - name: Deploy on EC2
+#         env:
+#           EC2_PUBLIC_IP: "34.229.129.48"
+#         run: |
+#           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > private_key.pem
+#           chmod 600 private_key.pem
 
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_PUBLIC_IP << 'EOF'
-            echo "Logging into EC2 and deploying..."
+#           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_PUBLIC_IP << 'EOF'
+#             echo "Logging into EC2 and deploying..."
             
-            # Stop and remove existing container if running
-            docker stop node-app || true
-            docker rm node-app || true
+#             # Stop and remove existing container if running
+#             docker stop node-app || true
+#             docker rm node-app || true
             
-            # Pull the latest image
-            docker pull ${{ vars.DOCKER_USERNAME }}/node-app:latest
+#             # Pull the latest image
+#             docker pull ${{ vars.DOCKER_USERNAME }}/node-app:latest
             
-            # Run the container
-            docker run -d -p 5000:5000 \
-              --name node-app \
-              --env-file /home/ubuntu/.env \
-              ${{ vars.DOCKER_USERNAME }}/node-app:latest
+#             # Run the container
+#             docker run -d -p 5000:5000 \
+#               --name node-app \
+#               --env-file /home/ubuntu/.env \
+#               ${{ vars.DOCKER_USERNAME }}/node-app:latest
             
-            echo "Deployment successful!"
-          EOF
+#             echo "Deployment successful!"
+#           EOF
