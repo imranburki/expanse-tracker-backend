@@ -21,7 +21,9 @@ jobs:
       run: |
         docker stop node-app || true
         docker rm node-app || true
-            
+        # Docker login
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+        
         # Pull the latest image
         docker pull ${{ vars.DOCKER_USERNAME }}/node-app:latest
             
