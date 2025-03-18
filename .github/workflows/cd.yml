@@ -13,8 +13,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Pull Docker image
-      run: docker pull ${{ vars.DOCKER_USERNAME }}/node-app:latest
     - name: Delete Old docker container
       run: sudo docker rm -f ${{ vars.DOCKER_USERNAME }}/node-app:latest || true
     - name: Run Docker Container
@@ -29,7 +27,7 @@ jobs:
             
         # Run the container
         docker run -d -p 5000:5000 \
-            --name node-app \
+            --name node-app 
             --env-file /home/ubuntu/.env \
             ${{ vars.DOCKER_USERNAME }}/node-app:latest
     - name: Run Docker Container
