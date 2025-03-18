@@ -17,8 +17,8 @@ jobs:
       run: sudo docker rm -f ${{ vars.DOCKER_USERNAME }}/node-app:latest || true
     - name: Run Docker Container
       run: |
-        docker stop node-app || true
-        docker rm node-app || true
+        docker stop nodejs-app || true
+        docker rm nodejs-app || true
         # Docker login
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
         
